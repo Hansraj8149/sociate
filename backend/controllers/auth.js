@@ -33,11 +33,45 @@ export const register = async (req, res) => {
       impressions: Math.floor(Math.random() * 1000),
     });
     const savedUser = await newUser.save();
-    res.status(201).json({success:true,
-        savedUser});
+    res.status(201).json({ success: true, savedUser });
   } catch (err) {
-    res.status(500).json({ 
-        success:true,
-        message: err.message });
+    res.status(500).json({
+      success: flase,
+      message: err.message,
+    });
+  }
+};
+
+/* LOGGING IN */
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email });
+    if (!user)
+      return res.status(400).json({
+        success:false,
+        message: "User does not exist",
+      });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({
+        success:false,
+        message: "Invalid password or email.",
+      });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    delete user.password;
+    res.status(200).json({
+      success: true,
+      token:token,
+      user:user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
