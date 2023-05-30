@@ -21,7 +21,7 @@ import { Provider } from "react-redux";
 const persistConfig = { key: "root", storage, version: 1 };
 const persisteReducer = persistReducer(persistConfig, authReducer);
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer:persisteReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
